@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./UploadForm.css";
+import { toast } from "react-toastify";
+import ProgressBar from "./ProgressBar";
 
 const UploadForm = () => {
+  const DEFAULT_MESSAGE = "이미지 파일을 업로드 해주세요";
   const [file, setFile] = useState(null);
-  const [fileName, setFileName] = useState("이미지 파일을 업로드 해주세요");
+  const [fileName, setFileName] = useState(DEFAULT_MESSAGE);
+  const [percent, setPercent] = useState(0);
 
   const imageSelectHandler = (event) => {
     const imageFile = event.target.files[0];
@@ -17,22 +22,42 @@ const UploadForm = () => {
     const formData = new FormData();
     formData.append("image", file);
     try {
-      const res = await axios.post("/upload", formData, {
+      await axios.post("/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (e) => {
+          setPercent(Math.round(100 * e.progress));
+        },
       });
-      console.log({ res });
-      alert("success");
+      toast.success("success!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      setTimeout(() => {
+        setPercent(0);
+        setFileName(DEFAULT_MESSAGE);
+      }, 2000);
     } catch (err) {
-      alert("fail");
+      toast.error(err.message);
       console.error(err);
+      setPercent(0);
     }
   };
 
   return (
     <form onSubmit={onSubmit}>
-      <label htmlFor="image">{fileName}</label>
-      <input id="image" type="file" onChange={imageSelectHandler} />
-      <button type="submit">제출</button>
+      <ProgressBar percent={percent} />
+      <div className="file-dropper">
+        {fileName}
+        <input id="image" type="file" onChange={imageSelectHandler} />
+      </div>
+      <button
+        type="submit"
+        style={{
+          width: "100%",
+          borderRadius: "3px",
+          height: 40,
+          cursor: "pointer",
+        }}
+      >
+        제출
+      </button>
     </form>
   );
 };

@@ -1,0 +1,15 @@
+.progess-bar-boundary{
+  border:1px solid black;
+  margin-bottom: 20px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.progess-bar-boundary div {
+  background-color: green;
+  height: 30px;
+  padding-top: 10px;
+  text-align: center;
+  color: white;
+  transition: 0.5s;
+}
