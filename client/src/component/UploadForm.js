@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import "./UploadForm.css";
 import { toast } from "react-toastify";
 import ProgressBar from "./ProgressBar";
+import { ImageContext } from "../context/ImageContext";
 
 const UploadForm = () => {
+  const [images, setImages] = useContext(ImageContext);
   const DEFAULT_MESSAGE = "이미지 파일을 업로드 해주세요";
   const [file, setFile] = useState(null);
   const [imgSrc, setImgSrc] = useState(null);
@@ -17,7 +19,7 @@ const UploadForm = () => {
     setFileName(imageFile.name);
     const fileReader = new FileReader();
     fileReader.readAsDataURL(imageFile);
-    fileReader.onload = e => setImgSrc(e.target.result); 
+    fileReader.onload = (e) => setImgSrc(e.target.result);
   };
 
   const onSubmit = async (e) => {
@@ -26,12 +28,15 @@ const UploadForm = () => {
     const formData = new FormData();
     formData.append("image", file);
     try {
-      await axios.post("/upload", formData, {
+      const res = await axios.post("/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (e) => {
           setPercent(Math.round(100 * e.progress));
         },
       });
+
+      setImages([...images, res.data]);
+
       toast.success("이미지 업로드 성공");
       setTimeout(() => {
         setPercent(0);
@@ -48,11 +53,19 @@ const UploadForm = () => {
 
   return (
     <form onSubmit={onSubmit}>
-      <img src={imgSrc} className={`image-preview ${imgSrc && "image-preview-show"}`}/>
-      <ProgressBar percent={percent} />    
+      <img
+        src={imgSrc}
+        className={`image-preview ${imgSrc && "image-preview-show"}`}
+      />
+      <ProgressBar percent={percent} />
       <div className="file-dropper">
         {fileName}
-        <input id="image" type="file" accept="image/*" onChange={imageSelectHandler} />
+        <input
+          id="image"
+          type="file"
+          accept="image/*"
+          onChange={imageSelectHandler}
+        />
       </div>
       <button
         type="submit"
