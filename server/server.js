@@ -33,7 +33,7 @@ mongoose
   })
   .then(() => {
     console.log("MongoDB Connected");
-    app.use("uploads", express.static("uploads"));
+    app.use("/uploads", express.static("uploads"));
 
     app.post("/upload", upload.single("image"), async (req, res) => {
       const image = await new Image({
