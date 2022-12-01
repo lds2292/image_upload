@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const { imageRouter } = require("./routes/imageRouter");
+const { userRouter } = require("./routes/userRouter");
 
 const app = express();
 const { MONGO_URL, PORT } = process.env;
@@ -15,8 +16,10 @@ mongoose
     console.log("MongoDB Connected");
 
     app.use("/uploads", express.static("uploads"));
+    app.use(express.json());
 
     app.use("/images", imageRouter);
+    app.use("/user", userRouter);
 
     app.listen(PORT, () => {
       console.log("Express server listening on PORT = " + PORT);
