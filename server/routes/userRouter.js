@@ -21,6 +21,7 @@ userRouter.post("/register", async (req, res) => {
       message: "user registered",
       sessionId: session._id,
       name: user.name,
+      username: user.username,
     });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -30,6 +31,9 @@ userRouter.post("/register", async (req, res) => {
 userRouter.patch("/login", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
+
+    if (!user) throw new Error("회원을 찾을 수 없습니다");
+
     const isValid = await compare(req.body.password, user.hashedPassword);
     if (!isValid) throw new Error("입력하신 정보가 올바르지 않습니다");
     user.sessions.push({ createdAt: new Date() });
@@ -38,6 +42,7 @@ userRouter.patch("/login", async (req, res) => {
     res.json({
       message: "user validated",
       sessionId: session._id,
+      username: user.username,
       name: user.name,
     });
   } catch (err) {

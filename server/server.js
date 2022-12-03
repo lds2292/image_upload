@@ -20,7 +20,7 @@ mongoose
     app.use(express.json());
     app.use(authenticate);
     app.use("/images", imageRouter);
-    app.use("/user", userRouter);
+    app.use("/users", userRouter);
 
     app.listen(PORT, () => {
       console.log("Express server listening on PORT = " + PORT);
