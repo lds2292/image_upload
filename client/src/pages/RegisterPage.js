@@ -31,7 +31,7 @@ const RegisterPage = () => {
       setMe({
         sessionId: result.data.sessionId,
         name: result.data.name,
-        username: result.data.username,
+        userId: result.data.userId,
       });
       toast.success("회원가입 성공");
       history.push("/");

@@ -21,7 +21,7 @@ userRouter.post("/register", async (req, res) => {
       message: "user registered",
       sessionId: session._id,
       name: user.name,
-      username: user.username,
+      userId: user._id,
     });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -42,7 +42,7 @@ userRouter.patch("/login", async (req, res) => {
     res.json({
       message: "user validated",
       sessionId: session._id,
-      username: user.username,
+      userId: user._id,
       name: user.name,
     });
   } catch (err) {
@@ -62,6 +62,22 @@ userRouter.patch("/logout", async (req, res) => {
     res.json({ message: "user is logged out" });
   } catch (err) {
     res.status(400).json({ message: err.message });
+  }
+});
+
+userRouter.get("/me", async (req, res) => {
+  try {
+    if (!req.user) throw new Error("권한이 없습니다");
+
+    res.json({
+      message: "user registered",
+      sessionId: req.headers.sessionid,
+      name: req.user.name,
+      userId: req.user._id,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: err.meesage });
   }
 });
 
