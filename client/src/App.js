@@ -1,16 +1,24 @@
 import React from "react";
-import UploadForm from "./component/UploadForm";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ImageList from "./component/ImageList";
+import LoginPage from "./pages/LoginPage";
+import MainPage from "./pages/MainPage";
+import RegisterPage from "./pages/RegisterPage";
+import { Switch, Route } from "react-router-dom";
+
+// react-router-dom의 버전 6에서는 Swtich -> Routes로 변경되었다
+// Route 안의 component -> element로 변경되었다
+// element={<MainPage/>}
 
 const App = () => {
   return (
     <div style={{ maxWidth: 600, margin: "auto" }}>
       <ToastContainer />
-      <h2>사진첩</h2>
-      <UploadForm />
-      <ImageList />
+      <Switch>
+        <Route path="/auth/register" exact component={RegisterPage} />
+        <Route path="/auth/login" exact component={LoginPage} />
+        <Route path="/" component={MainPage} />
+      </Switch>
     </div>
   );
 };
