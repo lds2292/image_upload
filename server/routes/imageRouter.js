@@ -2,6 +2,11 @@ const { Router } = require("express");
 const imageRouter = Router();
 const Image = require("../models/Image");
 const { upload } = require("../middleware/imageUpload");
+const fs = require("fs");
+const { promisify } = require("util");
+const mongoose = require("mongoose");
+
+const fileUnlink = promisify(fs.unlink);
 
 imageRouter.post("/", upload.single("image"), async (req, res) => {
   try {
@@ -29,7 +34,23 @@ imageRouter.get("/", async (req, res) => {
   res.json(images);
 });
 
-imageRouter.delete("/:imageId", (req, res) => {});
+imageRouter.delete("/:imageId", async (req, res) => {
+  try {
+    if (!req.user) throw new Error("권한이 없습니다");
+
+    if (!mongoose.isValidObjectId(req.params.imageId))
+      throw new Error("올바르지 않은 Image id 입니다");
+
+    const image = await Image.findOneAndDelete({ _id: req.params.imageId });
+    if (!image) return res.json({ message: "삭제완료" });
+    await fileUnlink(`./uploads/${image.key}`);
+
+    res.json({ message: "삭제완료", image });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: err.message });
+  }
+});
 
 imageRouter.patch("/:imageId/like", (req, res) => {});
 
