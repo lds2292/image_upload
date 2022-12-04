@@ -20,6 +20,7 @@ const LoginPage = () => {
         username,
         password,
       });
+      axios.defaults.headers.common.sessionid = result.sessionId;
       setMe({
         name: result.data.name,
         sessionId: result.data.sessionId,
