@@ -63,7 +63,7 @@ imageRouter.patch("/:imageId/like", async (req, res) => {
       { $addToSet: { likes: req.user.id } },
       { new: true }
     );
-    res.json({ message: "like" });
+    res.json(image);
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: err.message });
@@ -80,7 +80,7 @@ imageRouter.patch("/:imageId/unlike", async (req, res) => {
       { $pull: { likes: req.user.id } },
       { new: true }
     );
-    res.json({ message: "unlike" });
+    res.json(image);
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: err.message });
