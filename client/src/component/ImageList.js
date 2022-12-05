@@ -11,6 +11,8 @@ const ImageList = () => {
     isPublic,
     setIsPublic,
     loadMoreImages,
+    imageLoading,
+    imageError,
   } = useContext(ImageContext);
   const [me] = useContext(AuthContext);
   const imgList = (isPublic ? images : myImages).map((image) => (
@@ -30,7 +32,12 @@ const ImageList = () => {
         </button>
       )}
       <div className="image-list-container">{imgList}</div>
-      <button onClick={loadMoreImages}>load more Images</button>
+      {imageError && <div>Error...</div>}
+      {imageLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <button onClick={loadMoreImages}>load more Images</button>
+      )}
     </div>
   );
 };

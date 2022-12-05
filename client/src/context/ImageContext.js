@@ -9,13 +9,20 @@ export const ImageProvider = (props) => {
   const [myImages, setMyImages] = useState([]);
   const [isPublic, setIsPublic] = useState(true);
   const [imageUrl, setImageUrl] = useState("/images");
+  const [imageLoading, setImageLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const [me] = useContext(AuthContext);
 
   useEffect(() => {
+    setImageLoading(true);
     axios
       .get(imageUrl)
       .then((result) => setImages((prevData) => [...prevData, ...result.data]))
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        setImageError(err);
+      })
+      .finally(() => setImageLoading(false));
   }, [imageUrl]);
 
   useEffect(() => {
@@ -33,7 +40,7 @@ export const ImageProvider = (props) => {
   }, [me]);
 
   const loadMoreImages = () => {
-    if (images.length === 0) return;
+    if (images.length === 0 || imageLoading) return;
 
     const lastImageId = images[images.length - 1]._id;
     setImageUrl(`/images?lastid=${lastImageId}`);
@@ -49,6 +56,8 @@ export const ImageProvider = (props) => {
         isPublic,
         setIsPublic,
         loadMoreImages,
+        imageLoading,
+        imageError,
       }}
     >
       {props.children}
