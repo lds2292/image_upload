@@ -36,7 +36,7 @@ imageRouter.post("/", upload.array("image"), async (req, res) => {
 imageRouter.get("/", async (req, res) => {
   try {
     const { lastid } = req.query;
-    if (lastid && mongoose.isValidObjectId(lastid))
+    if (lastid && !mongoose.isValidObjectId(lastid))
       throw new Error("Invalid lastid");
 
     const images = await Image.find(

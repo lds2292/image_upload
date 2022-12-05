@@ -7,7 +7,6 @@ import { ImageContext } from "../context/ImageContext";
 
 const UploadForm = () => {
   const { images, setImages, myImages, setMyImages } = useContext(ImageContext);
-  const DEFAULT_MESSAGE = "이미지 파일을 업로드 해주세요";
   const [files, setFiles] = useState(null);
 
   const [previews, setPreviews] = useState([]);

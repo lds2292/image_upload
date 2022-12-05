@@ -4,7 +4,7 @@ import ImageList from "../component/ImageList";
 import { AuthContext } from "../context/AuthContext";
 
 const MainPage = () => {
-  const [me, setMe] = useContext(AuthContext);
+  const [me] = useContext(AuthContext);
 
   return (
     <>
