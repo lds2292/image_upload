@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { ImageContext } from "../context/ImageContext";
@@ -15,11 +15,37 @@ const ImageList = () => {
     imageError,
   } = useContext(ImageContext);
   const [me] = useContext(AuthContext);
-  const imgList = (isPublic ? images : myImages).map((image) => (
-    <Link key={image.key} to={`/images/${image._id}`}>
-      <img alt="" src={`http://localhost:5000/uploads/${image.key}`} />
-    </Link>
-  ));
+  const elementRef = useRef(null);
+
+  useEffect(() => {
+    if (!elementRef.current) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      console.log("intersection ", entry.isIntersecting);
+      if (entry.isIntersecting) loadMoreImages();
+    });
+    observer.observe(elementRef.current);
+    return () => observer.disconnect();
+  }, [loadMoreImages]);
+
+  const imgList = isPublic
+    ? images.map((image, index) => (
+        <Link
+          key={image.key}
+          to={`/images/${image._id}`}
+          ref={index + 1 === images.length ? elementRef : undefined}
+        >
+          <img alt="" src={`http://localhost:5000/uploads/${image.key}`} />
+        </Link>
+      ))
+    : myImages.map((image, index) => (
+        <Link
+          key={image.key}
+          to={`/images/${image._id}`}
+          ref={index + 1 === myImages.length ? elementRef : undefined}
+        >
+          <img alt="" src={`http://localhost:5000/uploads/${image.key}`} />
+        </Link>
+      ));
 
   return (
     <div>
