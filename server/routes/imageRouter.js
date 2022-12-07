@@ -35,6 +35,7 @@ imageRouter.post("/", upload.array("image"), async (req, res) => {
 
 imageRouter.get("/", async (req, res) => {
   try {
+    console.log(req.originalUrl);
     const { lastid } = req.query;
     if (lastid && !mongoose.isValidObjectId(lastid))
       throw new Error("Invalid lastid");
