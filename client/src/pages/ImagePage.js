@@ -9,31 +9,48 @@ import { useHistory } from "react-router-dom";
 const ImagePage = () => {
   const history = useHistory();
   const { imageId } = useParams();
-  const { images, myImages, setImages, setMyImages } = useContext(ImageContext);
+  const { images, setImages, setMyImages } = useContext(ImageContext);
   const [me] = useContext(AuthContext);
   const [hasLiked, setHasLiked] = useState(false);
-  const image =
-    images.find((image) => image._id === imageId) ||
-    myImages.find((image) => image._id === imageId);
+  const [image, setImage] = useState(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (image && image._id === imageId) return;
+    console.log(`${JSON.stringify(axios.defaults.headers.common)} 나와라 ㅠ`);
+    axios
+      .get(`/images/${imageId}`)
+      .then(({ data }) => {
+        setError(false);
+        setImage(data);
+      })
+      .catch((err) => {
+        setError(true);
+        toast.error(err.response.data.message);
+      });
+  }, [imageId]);
 
   useEffect(() => {
     if (me && image && image.likes.includes(me.userId)) setHasLiked(true);
-  }, []);
+  }, [me, image]);
 
-  if (!image) return <h3>Loading...</h3>;
+  if (error) return <h3>Error</h3>;
+  else if (!image) return <h3>Loading...</h3>;
 
   const updateImage = (images, image) =>
-    [...images.filter((image) => image._id !== imageId), image].sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    );
+    [...images.filter((image) => image._id !== imageId), image].sort((a, b) => {
+      return a._id < b._id ? 1 : -1;
+    });
 
   const onSubmit = async () => {
     const result = await axios.patch(
       `/images/${imageId}/${hasLiked ? "unlike" : "like"}`
     );
-    if (result.data.public) setImages(updateImage(images, result.data));
-    else setMyImages(updateImage(myImages, result.data));
+    if (result.data.public)
+      setImages((prevData) => updateImage(prevData, result.data));
+
+    setMyImages((prevData) => updateImage(prevData, result.data));
+
     setHasLiked(!hasLiked);
   };
 
@@ -43,8 +60,12 @@ const ImagePage = () => {
       const result = await axios.delete(`/images/${imageId}`);
       toast.success(result.data.message);
 
-      setImages(images.filter((image) => image._id !== imageId));
-      setMyImages(myImages.filter((image) => image._id !== imageId));
+      setImages((prevData) =>
+        prevData.filter((image) => image._id !== imageId)
+      );
+      setMyImages((prevData) =>
+        prevData.filter((image) => image._id !== imageId)
+      );
 
       history.push("/");
     } catch (err) {

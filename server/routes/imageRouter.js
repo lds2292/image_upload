@@ -35,7 +35,6 @@ imageRouter.post("/", upload.array("image"), async (req, res) => {
 
 imageRouter.get("/", async (req, res) => {
   try {
-    console.log(req.originalUrl);
     const { lastid } = req.query;
     if (lastid && !mongoose.isValidObjectId(lastid))
       throw new Error("Invalid lastid");
@@ -51,6 +50,27 @@ imageRouter.get("/", async (req, res) => {
       .sort({ _id: -1 })
       .limit(20);
     res.json(images);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: err.message });
+  }
+});
+
+imageRouter.get("/:imageId", async (req, res) => {
+  try {
+    const { imageId } = req.params;
+    if (!mongoose.isValidObjectId(imageId)) throw new Error("Invalid Image id");
+    const image = await Image.findOne({ _id: imageId });
+
+    if (!image) throw new Error("존재하지 않는 이미지 입니다");
+
+    if (
+      !image.public &&
+      (!req.user || req.user.id !== image.user._id.toString())
+    )
+      throw new Error("권한이 없습니다");
+
+    res.json(image);
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: err.message });
@@ -76,7 +96,6 @@ imageRouter.delete("/:imageId", async (req, res) => {
 });
 
 imageRouter.patch("/:imageId/like", async (req, res) => {
-  console.log(req.user);
   try {
     if (!req.user) throw new Error("권한이 없습니다");
     if (!mongoose.isValidObjectId(req.params.imageId))

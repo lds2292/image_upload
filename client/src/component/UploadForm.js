@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import axios from "axios";
 import "./UploadForm.css";
 import { toast } from "react-toastify";
@@ -6,13 +6,14 @@ import ProgressBar from "./ProgressBar";
 import { ImageContext } from "../context/ImageContext";
 
 const UploadForm = () => {
-  const { setImages } = useContext(ImageContext);
+  const { setImages, setMyImages } = useContext(ImageContext);
   const [files, setFiles] = useState(null);
 
   const [previews, setPreviews] = useState([]);
 
   const [percent, setPercent] = useState(0);
   const [isPublic, setIsPublic] = useState(true);
+  const inputRef = useRef();
 
   const imageSelectHandler = async (event) => {
     const imageFiles = event.target.files;
@@ -53,17 +54,20 @@ const UploadForm = () => {
           setPercent(Math.round(100 * e.progress));
         },
       });
-      console.log(res.data);
-      setImages((prevData) => [...prevData, ...res.data]);
+
+      if (isPublic) setImages((prevData) => [...res.data, ...prevData]);
+      setMyImages((prevData) => [...res.data, ...prevData]);
       toast.success("이미지 업로드 성공");
       setTimeout(() => {
         setPercent(0);
         setPreviews([]);
+        inputRef.current.value = null;
       }, 2000);
     } catch (err) {
       toast.error(err.response.data.message);
       setPercent(0);
       setPreviews([]);
+      inputRef.current.value = null;
     }
   };
 
@@ -89,6 +93,7 @@ const UploadForm = () => {
       <div className="file-dropper">
         {fileName}
         <input
+          ref={(ref) => (inputRef.current = ref)}
           id="image"
           type="file"
           multiple

@@ -9,5 +9,4 @@ const authenticate = async (req, _, next) => {
   req.user = user;
   return next();
 };
-
 module.exports = { authenticate };

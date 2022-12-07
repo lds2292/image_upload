@@ -25,7 +25,9 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem("sessionId");
           delete axios.defaults.headers.common.sessionid;
         });
-    } else delete axios.defaults.headers.common.sessionid;
+    } else {
+      delete axios.defaults.headers.common.sessionid;
+    }
   }, [me]);
 
   return (
