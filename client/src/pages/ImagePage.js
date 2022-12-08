@@ -15,9 +15,11 @@ const ImagePage = () => {
   const [image, setImage] = useState(null);
   const [error, setError] = useState(false);
 
+  const sessionId = localStorage.getItem("sessionId");
+
   useEffect(() => {
     if (image && image._id === imageId) return;
-    console.log(`${JSON.stringify(axios.defaults.headers.common)} 나와라 ㅠ`);
+    if (sessionId) axios.defaults.headers.common.sessionid = sessionId;
     axios
       .get(`/images/${imageId}`)
       .then(({ data }) => {
