@@ -5,6 +5,7 @@ const { upload } = require("../middleware/imageUpload");
 const fs = require("fs");
 const { promisify } = require("util");
 const mongoose = require("mongoose");
+const { s3 } = require("../aws");
 
 const fileUnlink = promisify(fs.unlink);
 
@@ -87,7 +88,17 @@ imageRouter.delete("/:imageId", async (req, res) => {
 
     const image = await Image.findOneAndDelete({ _id: req.params.imageId });
     if (!image) return res.json({ message: "삭제완료" });
-    await fileUnlink(`./uploads/${image.key}`);
+    // await fileUnlink(`./uploads/${image.key}`);
+
+    s3.deleteObject(
+      {
+        Bucket: "browngoo-image-upload-tutorial",
+        Key: `raw/${image.key}`,
+      },
+      (err) => {
+        if (err) throw err;
+      }
+    );
 
     res.json({ message: "삭제완료", image });
   } catch (err) {
