@@ -26,7 +26,7 @@ imageRouter.post("/presigned", async (req, res) => {
       })
     );
 
-    return presignedData;
+    res.json(presignedData);
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: err.message });

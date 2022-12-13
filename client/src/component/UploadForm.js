@@ -37,6 +37,42 @@ const UploadForm = () => {
     setPreviews(imagePreviews);
   };
 
+  const onSubmitV2 = async (e) => {
+    e.preventDefault();
+    try {
+      const presignedData = await axios.post("/images/presigned", {
+        contentTypes: [...files].map((file) => file.type),
+      });
+
+      const result = await Promise.all(
+        [...files].map((file, index) => {
+          const { presigned } = presignedData.data[index];
+          const formData = new FormData();
+          for (const key in presigned.fields) {
+            formData.append(key, presigned.fields[key]);
+          }
+          formData.append("Content-Type", file.type);
+          formData.append("file", file);
+          return axios.post(presigned.url, formData);
+        })
+      );
+
+      console.log(result);
+
+      toast.success("이미지 업로드 성공");
+      setTimeout(() => {
+        setPercent(0);
+        setPreviews([]);
+        inputRef.current.value = null;
+      }, 2000);
+    } catch (err) {
+      toast.error(err.response.data.message);
+      setPercent(0);
+      setPreviews([]);
+      inputRef.current.value = null;
+    }
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
 
@@ -87,7 +123,7 @@ const UploadForm = () => {
       : previews.reduce((a, b) => a + `${b.fileName},`, "");
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmitV2}>
       <div className="preview-container">{previewImages}</div>
       <ProgressBar percent={percent} />
       <div className="file-dropper">
