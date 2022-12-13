@@ -36,28 +36,56 @@ imageRouter.post("/presigned", async (req, res) => {
 imageRouter.post("/", upload.array("image"), async (req, res) => {
   try {
     if (!req.user) throw new Error("권한이 없습니다");
-    console.log(req.files);
-    const images = await Promise.all(
-      req.files.map(async (file) => {
-        const image = await new Image({
+
+    const { images, public } = req.body;
+
+    const imageDocs = await Promise.all(
+      images.map((image) =>
+        new Image({
           user: {
             _id: req.user.id,
             name: req.user.name,
             username: req.user.username,
           },
-          public: req.body.public,
-          key: file.key.replace("raw/", ""),
-          originalFileName: file.originalname,
-        }).save();
-        return image;
-      })
+          public,
+          key: image.imageKey,
+          originalFileName: image.originalname,
+        }).save()
+      )
     );
-    res.json(images);
+
+    res.json(imageDocs);
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: err.message });
   }
 });
+
+// imageRouter.post("/", upload.array("image"), async (req, res) => {
+//   try {
+//     if (!req.user) throw new Error("권한이 없습니다");
+//     console.log(req.files);
+//     const images = await Promise.all(
+//       req.files.map(async (file) => {
+//         const image = await new Image({
+//           user: {
+//             _id: req.user.id,
+//             name: req.user.name,
+//             username: req.user.username,
+//           },
+//           public: req.body.public,
+//           key: file.key.replace("raw/", ""),
+//           originalFileName: file.originalname,
+//         }).save();
+//         return image;
+//       })
+//     );
+//     res.json(images);
+//   } catch (err) {
+//     console.log(err);
+//     res.status(400).json({ message: err.message });
+//   }
+// });
 
 imageRouter.get("/", async (req, res) => {
   try {
