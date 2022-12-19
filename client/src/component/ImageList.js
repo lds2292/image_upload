@@ -40,7 +40,7 @@ const ImageList = () => {
       >
         <img
           alt=""
-          src={`https://browngoo-image-upload-tutorial.s3.ap-northeast-2.amazonaws.com/raw/${image.key}`}
+          src={`https://browngoo-image-upload-tutorial.s3.ap-northeast-2.amazonaws.com/w140/${image.key}`}
         />
       </Link>
     );
