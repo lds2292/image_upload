@@ -40,7 +40,7 @@ const ImageList = () => {
         ref={index + 1 === images.length ? elementRef : undefined}
       >
         <Image
-          imageUrl={`https://browngoo-image-upload-tutorial.s3.ap-northeast-2.amazonaws.com/w140/${image.key}`}
+          imageUrl={`https://dqeu2y8xavpyx.cloudfront.net/w140/${image.key}`}
         />
       </Link>
     );

@@ -38,9 +38,9 @@ const UploadForm = () => {
   };
 
   const onSubmitV2 = async (e) => {
-    setIsUploading(true);
     e.preventDefault();
     try {
+      setIsUploading(true);
       const presignedData = await axios.post("/images/presigned", {
         contentTypes: [...files].map((file) => file.type),
       });
