@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { ImageContext } from "../context/ImageContext";
+import Image from "./Image";
 import "./ImageList.css";
 
 const ImageList = () => {
@@ -38,9 +39,8 @@ const ImageList = () => {
         to={`/images/${image._id}`}
         ref={index + 1 === images.length ? elementRef : undefined}
       >
-        <img
-          alt=""
-          src={`https://browngoo-image-upload-tutorial.s3.ap-northeast-2.amazonaws.com/w140/${image.key}`}
+        <Image
+          imageUrl={`https://browngoo-image-upload-tutorial.s3.ap-northeast-2.amazonaws.com/w140/${image.key}`}
         />
       </Link>
     );

@@ -8,7 +8,7 @@ import { ImageContext } from "../context/ImageContext";
 const UploadForm = () => {
   const { setImages, setMyImages } = useContext(ImageContext);
   const [files, setFiles] = useState(null);
-
+  const [isUploading, setIsUploading] = useState(false);
   const [previews, setPreviews] = useState([]);
 
   const [percent, setPercent] = useState([]);
@@ -38,6 +38,7 @@ const UploadForm = () => {
   };
 
   const onSubmitV2 = async (e) => {
+    setIsUploading(true);
     e.preventDefault();
     try {
       const presignedData = await axios.post("/images/presigned", {
@@ -78,12 +79,14 @@ const UploadForm = () => {
 
       toast.success("이미지 업로드 성공");
       setTimeout(() => {
+        setIsUploading(false);
         setPercent([]);
         setPreviews([]);
         inputRef.current.value = null;
       }, 2000);
     } catch (err) {
       toast.error(err);
+      setIsUploading(false);
       setPercent([]);
       setPreviews([]);
       inputRef.current.value = null;
@@ -130,6 +133,7 @@ const UploadForm = () => {
       <label htmlFor="public-check">비공개</label>
       <button
         type="submit"
+        disabled={isUploading}
         style={{
           width: "100%",
           borderRadius: "3px",
